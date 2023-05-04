@@ -6,7 +6,7 @@
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 13:53:13 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/04 16:59:57 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/04 21:02:23 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void	*routine(void *list)
 		pthread_mutex_lock(&((t_philo *)list)->next->fork);
 		print_it(list, "has taking a fork\n");
 		print_it(list, "is eating\n");
+		((t_philo *)list)->t_last_eat = get_time () - ((t_philo *)list)->t_start;
 		ft_usleep(((t_philo *)list)->t_to_eat);
 		((t_philo *)list)->eat_counter++;
 		pthread_mutex_unlock(&((t_philo *)list)->next->fork);
@@ -84,10 +85,47 @@ void	*routine(void *list)
 	return (NULL);
 }
 
+void	set_end(t_philo *list)
+{
+	t_philo	*tmp;
+
+	tmp = list;
+	while (tmp)
+	{
+		tmp->is_died = true;
+		tmp->finished = true;
+		tmp = tmp->next;
+		if (tmp == list)
+			break ;
+	}
+}
+
+void *is_died(void *list)
+{
+	t_philo	*tmp;
+
+	tmp = (t_philo *)list;
+
+	while (!tmp->finished)
+	{
+
+		if ((get_time() - tmp->t_start) - tmp->t_last_eat > tmp->t_to_die)
+		{
+			print_it(tmp, RED"died\n"RESET);
+			set_end(tmp);
+			return (NULL);
+		}
+		//tmp = tmp->next;
+		//usleep(100);
+	}
+	return (NULL);
+}
+
 bool	philosophers(t_philo **list)
 {
 	int			index;
 	t_philo		*tmp;
+	pthread_t	dead_check;
 
 	tmp = *list;
 	index = 0;
@@ -97,7 +135,9 @@ bool	philosophers(t_philo **list)
 	{
 		if (pthread_create(&tmp->philo, NULL, routine, tmp))
 			return (printf("Philo: Failed to create a new thread.\n"), false);
-		
+		if (pthread_create(&dead_check, NULL, is_died, tmp))
+			return (printf("Philo: Failed to create a new thread.\n"), false);
+		pthread_detach(dead_check);
 		index++;
 		tmp = tmp->next;
 		usleep(100);

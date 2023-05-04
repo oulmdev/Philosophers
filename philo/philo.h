@@ -6,7 +6,7 @@
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 11:05:49 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/04 16:39:15 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/04 20:52:09 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 # include <stdbool.h>
 
 
+# define RED "\033[0;31m"
+# define RESET "\033[0m"
 # define INPERROR "- Do not test with more than 200 philosophers\n\
 - Do not test with time_to_die or time_to_eat or time_to_sleep under 60 ms.\n\
 - Test only with numbers.\n"
@@ -38,7 +40,7 @@ typedef struct s_philo
 	long 			t_start;
 	int				eat_counter;
 	int				n_must_eat;
-	bool			is_die;
+	bool			is_died;
 	bool			is_full;
 	bool			finished;
 	pthread_t		philo;
