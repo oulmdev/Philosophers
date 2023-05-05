@@ -6,11 +6,23 @@
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 13:53:13 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/04 21:02:23 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/05 11:38:52 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "philo.h"
+
+void	set_end(t_philo *list);
+
+int	ft_strcmp(char *s1, char *s2)
+{
+	int	i;
+
+	i = 0;
+	while ((s1[i] && s2[i]) && (s1[i] == s2[i]))
+		i++;
+	return (s1[i] - s2[i]);
+}
 
 long	get_time(void)
 {
@@ -48,7 +60,7 @@ bool	init_mutexes(t_philo *list)
 	}
 	return (true);
 }
-
+#include <string.h>
 void	print_it(t_philo *philo, char *message)
 {
 	t_philo	*tmp;
@@ -57,8 +69,16 @@ void	print_it(t_philo *philo, char *message)
 	while (tmp->philo_id != 1)
 		tmp = tmp->next;
 	pthread_mutex_lock(&tmp->triger);
-	printf("%ld philo %d %s", (get_time() - philo->t_start),
-		philo->philo_id, message);
+	if (philo->finished == false)
+	{
+		printf("%ld philo %d %s", (get_time() - philo->t_start),
+			philo->philo_id, message);
+		if (strcmp(message, RED"died\n"RESET) == 0)
+		{
+			set_end(philo);
+			printf(RED"hello \n");
+		}
+	}
 	pthread_mutex_unlock(&tmp->triger);
 }
 
@@ -112,10 +132,8 @@ void *is_died(void *list)
 		if ((get_time() - tmp->t_start) - tmp->t_last_eat > tmp->t_to_die)
 		{
 			print_it(tmp, RED"died\n"RESET);
-			set_end(tmp);
 			return (NULL);
 		}
-		//tmp = tmp->next;
 		//usleep(100);
 	}
 	return (NULL);
