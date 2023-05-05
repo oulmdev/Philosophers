@@ -6,7 +6,7 @@
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 12:30:12 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/04 13:46:17 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/05 12:13:36 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ bool	pars(t_philo **list, char *av[], int ac)
 			return (printf("Philo: malloc() failed.\n"), false);
 		philo++;
 	}
+	if (ft_atoi(av[1]) == 1)
+		(*list)->one_philo = true;
 	return (true);
 
 }

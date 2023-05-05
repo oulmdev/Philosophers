@@ -6,8 +6,8 @@
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/Users/moulmoud/Desktop/philosophers/philo",
-      "program": "/Users/moulmoud/Desktop/philosophers/philo/build/Debug/outDebug"
+      "cwd": "/Users/moulmoud/Desktop/Philosophers/philo",
+      "program": "/Users/moulmoud/Desktop/Philosophers/philo/build/Debug/outDebug"
     }
   ]
 }

@@ -6,7 +6,7 @@
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 11:31:27 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/04 20:50:09 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/05 12:10:52 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ t_philo	*new_philo(char *av[], int i)
 		new->n_must_eat = ft_atoi(av[5]);
 	else
 		new->n_must_eat = -1;
+	new->one_philo = false;
 	new->is_died = false;
-	new->is_full = false;
 	new->finished = false;
 	new->eat_counter = 0;
 	new->next = NULL;

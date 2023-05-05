@@ -6,7 +6,7 @@
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 11:05:49 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/04 20:52:09 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/05 12:10:36 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct s_philo
 	int				eat_counter;
 	int				n_must_eat;
 	bool			is_died;
-	bool			is_full;
+	bool			one_philo;
 	bool			finished;
 	pthread_t		philo;
 	pthread_mutex_t	fork;
@@ -55,5 +55,6 @@ bool		lst_addback(t_philo **philo, t_philo *new);
 bool		pars(t_philo **list, char *av[], int ac);
 int			ft_atoi(char *str);
 bool		philosophers(t_philo **list);
-long 	get_time(void);
+long 		get_time(void);
+
 #endif
