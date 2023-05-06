@@ -5,56 +5,53 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/04 11:05:49 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/05 12:10:36 by moulmoud         ###   ########.fr       */
+/*   Created: 2023/05/06 15:25:09 by moulmoud          #+#    #+#             */
+/*   Updated: 2023/05/06 18:51:52 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
+
+
 # include <stdio.h>
 # include <stdlib.h>
-# include <pthread.h>
 # include <unistd.h>
+# include <pthread.h>
 # include <sys/time.h>
 # include <stdbool.h>
 
+typedef struct s_monitor{
+	int				nb_philos;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				nb_eat;
+	bool			is_dead;
+	long			start_time;
+	pthread_mutex_t	print;
+	pthread_mutex_t	dead;
+	pthread_mutex_t	eating;
+}t_monitor;
 
-# define RED "\033[0;31m"
-# define RESET "\033[0m"
-# define INPERROR "- Do not test with more than 200 philosophers\n\
-- Do not test with time_to_die or time_to_eat or time_to_sleep under 60 ms.\n\
-- Test only with numbers.\n"
-# define GUIDE "Example: \n./philo [number_of_philos] [time_to_die] \
-[time_to_eat] [time_to_sleep] [number_of_times_each_philosopher_must_eat]"
-
-typedef struct s_philo
-{
-	int				philo_id;
-	int				philo_count;
-	long			t_to_die;
-	long 			t_to_eat;
-	long 			t_to_sleep;
-	long 			t_last_eat;
-	long 			t_start;
-	int				eat_counter;
-	int				n_must_eat;
-	bool			is_died;
-	bool			one_philo;
-	bool			finished;
-	pthread_t		philo;
+typedef struct s_philo{
+	int				id;
+	long			last_eat;
+	int				eat_count;
+	pthread_mutex_t	last_eat_mutex;
+	bool			is_full;
+	t_monitor		*monitor;
+	pthread_t		thread;
 	pthread_mutex_t	fork;
-	pthread_mutex_t	triger;
 	struct s_philo	*next;
 }t_philo;
 
-
-t_philo		*new_philo(char *av[], int i);
-bool		lst_addback(t_philo **philo, t_philo *new);
-bool		pars(t_philo **list, char *av[], int ac);
+int			parsing(int ac, char *av[]);
 int			ft_atoi(char *str);
-bool		philosophers(t_philo **list);
-long 		get_time(void);
+long		get_time(void);
+t_philo		*newphilo(int id, t_monitor **monitor);
+int			lst_addback(t_philo **philo, t_philo *new);
+bool		start_simulation(t_philo *philos);
 
 #endif

@@ -5,8 +5,8 @@
 #                                                     +:+ +:+         +:+      #
 #    By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/05/04 13:47:03 by moulmoud          #+#    #+#              #
-#    Updated: 2023/05/04 13:52:23 by moulmoud         ###   ########.fr        #
+#    Created: 2023/05/06 15:35:09 by moulmoud          #+#    #+#              #
+#    Updated: 2023/05/06 21:41:48 by moulmoud         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = philo
 
 CC = cc
 
-#CFLAGS = -Wall -Wextra -Werror -pthread
+CFLAGS = -Wall -Werror -Wextra -pthread
 
 SRCS = $(wildcard *.c)
 
@@ -24,15 +24,15 @@ OBJS = $(SRCS:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) -o $(NAME) $(OBJS)
+		$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
 
-%.o: %.c philo.h
-	$(CC) -c $< -o $@
+%.o: %.c
+		$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+		rm -f $(OBJS)
 
 fclean: clean
-	rm -f $(NAME)
+		rm -f $(NAME)
 
 re: fclean all

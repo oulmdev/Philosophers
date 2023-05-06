@@ -1,27 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   addBack.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/04 12:00:12 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/04 20:53:52 by moulmoud         ###   ########.fr       */
+/*   Created: 2023/05/06 15:38:30 by moulmoud          #+#    #+#             */
+/*   Updated: 2023/05/06 15:43:19 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "philo.h"
+#include "philo.h"
 
-int main(int ac, char *av[])
+int lst_addback(t_philo **philo, t_philo *new)
 {
-	t_philo *list;
+	t_philo	*last;
 
-	list = NULL;
-
-	if (ac < 5 || ac > 6)
-		return (printf("Philo: Wrong number of argumment.\n"GUIDE), 1);
-	if (pars(&list, av, ac) == false)
-		return (false);
-	if (philosophers(&list) == false)
-		return (false);
+	if (!new)
+		return (1);
+	if (!*philo)
+	{
+		*philo = new;
+		new->next = (*philo);
+		return (0);
+	}
+	last = *philo;
+	while (last->next != (*philo))
+		last = last->next;
+	last->next = new;
+	new->next = *philo;
+	return (0);
 }

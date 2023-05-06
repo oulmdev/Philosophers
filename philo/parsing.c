@@ -5,59 +5,30 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/04 12:30:12 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/05 12:13:36 by moulmoud         ###   ########.fr       */
+/*   Created: 2023/05/06 15:33:25 by moulmoud          #+#    #+#             */
+/*   Updated: 2023/05/06 15:33:56 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "philo.h"
+#include "philo.h"
 
-static bool	is_number(char *str)
+int	ft_isdigit(int c)
 {
-	int	index;
-
-	index = 0;
-	while (str[index])
-	{
-		if (str[index] > '9' || str[index] < '0')
-			return (false);
-		index++;
-	}
-	return (true);
+	return (c >= '0' && c <= '9');
 }
 
-static bool	is_valide(char *av[])
+int	parsing(int ac, char *av[])
 {
-	int	index;
+	int	i;
+	int	j;
 
-	index = 1;
-	while (av[index])
-		if (!is_number(av[index++]))
-			return (false);
-	if (ft_atoi(av[1]) > 200)
-		return (false);
-	if (ft_atoi(av[2]) < 60 || ft_atoi(av[3]) < 60 || ft_atoi(av[4]) < 60)
-		return (false);
-	return (true);
-}
-
-bool	pars(t_philo **list, char *av[], int ac)
-{
-	int	philo;
-	int	index;
-
-	index = 1;
-	philo = 1;
-	if (!is_valide(av))
-		return (printf("Philo: Wrong input.\n"INPERROR), false);
-	while (philo <= ft_atoi(av[1]))
+	i = 0;
+	while (++i < ac)
 	{
-		if (lst_addback(list, new_philo(av, philo)) == false)
-			return (printf("Philo: malloc() failed.\n"), false);
-		philo++;
+		j = -1;
+		while (av[i][++j])
+			if (!ft_isdigit(av[i][j]))
+				return (1);
 	}
-	if (ft_atoi(av[1]) == 1)
-		(*list)->one_philo = true;
-	return (true);
-
+	return (0);
 }

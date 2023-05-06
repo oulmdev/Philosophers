@@ -5,173 +5,93 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/04 13:53:13 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/05 19:57:28 by moulmoud         ###   ########.fr       */
+/*   Created: 2023/05/06 15:32:12 by moulmoud          #+#    #+#             */
+/*   Updated: 2023/05/06 19:46:22 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "philo.h"
+#	include "philo.h"
 
-void	set_end(t_philo *list);
-
-int	ft_strcmp(char *s1, char *s2)
+bool	init_monitor(t_monitor **monitor, char *av[]);
+bool	init_philos(t_philo **philos, t_monitor **monitor);
+bool	start_simulation(t_philo *philos);
+void printThemAll(t_philo *philos, int j)
 {
-	int	i;
-
-	i = 0;
-	while ((s1[i] && s2[i]) && (s1[i] == s2[i]))
-		i++;
-	return (s1[i] - s2[i]);
-}
-
-long	get_time(void)
-{
-	struct timeval	time;
-
-	if (gettimeofday(&time, NULL) == -1)
-		return (false);
-	return (time.tv_sec * 1000 + time.tv_usec / 1000);
-}
-void	ft_usleep(long time)
-{
-	long long start;
-
-	start = get_time();
-	while (get_time() - start < time)
-		usleep(100);
-}
-
-bool	init_mutexes(t_philo *list)
-{
-	int		index;
-	long	start_time;
-
-	index = 0;
-	start_time = get_time();
-	if (!start_time)
-		return (printf("Philo: Failed to get time.\n"), false);
-	while (index < list->philo_count)
+	while (j--)
 	{
-		if (pthread_mutex_init(&list->fork, NULL))
-			return (false);
-		list->t_start = start_time;
-		index++;
-		list = list->next;
+		printf("---------------------------------\n");
+		printf("id: %d\n", philos->id);
+		printf("print_thread: %p\n", &((t_monitor *)philos->monitor)->print);
+		printf("eating_thread: %p\n", &((t_monitor *)philos->monitor)->eating);
+		printf("dead_thread: %p\n", &((t_monitor *)philos->monitor)->dead);
+		printf("nb_eat: %d\n", ((t_monitor *)philos->monitor)->nb_eat);
+		printf("time_to_die: %d\n", ((t_monitor *)philos->monitor)->time_to_die);
+		printf("time_to_eat: %d\n", ((t_monitor *)philos->monitor)->time_to_eat);
+		printf("time_to_sleep: %d\n", ((t_monitor *)philos->monitor)->time_to_sleep);
+		printf("is_dead: %d\n", ((t_monitor *)philos->monitor)->is_dead);
+		printf("start_time: %ld\n", ((t_monitor *)philos->monitor)->start_time);
+		printf("last_eat: %ld\n", philos->last_eat);
+		printf("is_full: %d\n", philos->is_full);
+		printf("---------------------------------\n");
+		philos = philos->next;
 	}
+}
+
+int	main(int ac, char *av[])
+{
+	t_monitor		*monitor;
+	t_philo			*philos;
+
+	philos = NULL;
+	if (ac < 5 || ac > 6)
+		return (printf("Error: Wrong number of arguments\n"));
+	if (parsing(ac, av))
+		return (printf("Error: Wrong arguments\n"));
+	if (init_monitor(&monitor, av) == false)
+		return (printf("Error: Monitor initialization failed\n"));
+	if (!init_philos(&philos, &monitor))
+		return (printf("Error: Philos initialization failed\n"));
+	if (!start_simulation(philos))
+		return (printf("Error: Simulation failed\n"));
+	return (0);
+}
+
+bool	init_monitor(t_monitor **monitor, char *av[])
+{
+	*monitor = malloc(sizeof(t_monitor));
+	if (!*monitor)
+		return (false);
+	(*monitor)->nb_philos = ft_atoi(av[1]);
+	(*monitor)->time_to_die = ft_atoi(av[2]);
+	(*monitor)->time_to_eat = ft_atoi(av[3]);
+	(*monitor)->time_to_sleep = ft_atoi(av[4]);
+	if (av[5])
+		(*monitor)->nb_eat = ft_atoi(av[5]);
+	else
+		(*monitor)->nb_eat = -1;
+	(*monitor)->is_dead = false;
+	(*monitor)->start_time = get_time();
+	if (pthread_mutex_init(&((*monitor)->print), NULL))
+		return (false);
+	if (pthread_mutex_init(&((*monitor)->dead), NULL))
+		return (false);
+	if (pthread_mutex_init(&((*monitor)->eating), NULL))
+		return (false);
 	return (true);
 }
 
-void	print_it(t_philo *philo, char *message)
+bool	init_philos(t_philo **philo, t_monitor **monitor)
 {
-	t_philo	*tmp;
+	int	id;
+	int	number_of_philos;
 
-	tmp = philo;
-	if (philo->finished == true || philo->is_died == true)
-		return ;
-	while (tmp->philo_id != 1)
-		tmp = tmp->next;
-	if (philo->finished == true || philo->is_died == true)
+	number_of_philos = (*monitor)->nb_philos;
+	id = 1;
+	while (number_of_philos--)
 	{
-		pthread_mutex_unlock(&tmp->triger);
-		return ;
-	}
-	pthread_mutex_lock(&tmp->triger);
-	printf("%ld philo %d %s", (get_time() - philo->t_start),
-		philo->philo_id, message);
-	pthread_mutex_unlock(&tmp->triger);
-}
-
-void	*routine(void *list)
-{
-	while (((t_philo *)list)->finished == false)
-	{
-		pthread_mutex_lock(&((t_philo *)list)->fork);
-		print_it(list, "has taken a fork\n");
-		if (((t_philo *)list)->one_philo == true)
-			return (ft_usleep(((t_philo *)list)->t_to_die),
-				print_it(list, "died\n"), NULL);
-		pthread_mutex_lock(&((t_philo *)list)->next->fork);
-		print_it(list, "has taken a fork\n");
-		print_it(list, "is eating\n");
-		((t_philo *)list)->t_last_eat
-			= get_time () - ((t_philo *)list)->t_start;
-		ft_usleep(((t_philo *)list)->t_to_eat);
-		((t_philo *)list)->eat_counter++;
-		pthread_mutex_unlock(&((t_philo *)list)->next->fork);
-		pthread_mutex_unlock(&((t_philo *)list)->fork);
-		if (((t_philo *)list)->eat_counter == ((t_philo *)list)->n_must_eat)
-			break ;
-		print_it(list, "is sleeping\n");
-		ft_usleep(((t_philo *)list)->t_to_sleep);
-		print_it(list, "is thinking\n");
-	}
-	return (NULL);
-}
-
-void	set_end(t_philo *list)
-{
-	int	index;
-
-	index = 1;
-	while (index <= list->philo_count)
-	{
-		list->is_died = true;
-		list->finished = true;
-		list = list->next;
-		index++;
-	}
-}
-
-void *is_died(void *list)
-{
-	t_philo	*tmp;
-	int		index;
-
-	tmp = (t_philo *)list;
-	while (tmp->finished == false)
-	{
-		if ((get_time() - tmp->t_start) - tmp->t_last_eat
-			> tmp->t_to_die && tmp->finished == false)
-		{
-			print_it(tmp, "died\n");
-			set_end(list);
-			return (list);
-		}
-		usleep(100);
-		index++;
-		tmp = tmp->next;
-	}
-	return (list);
-}
-
-bool	philosophers(t_philo **list)
-{
-	int			index;
-	t_philo		*tmp;
-	pthread_t	dead_check;
-
-	tmp = *list;
-	index = 0;
-	if (!init_mutexes(*list))
-		return (printf("Philo: Failed to create a new mutex.\n"), false);
-	while (index < tmp->philo_count)
-	{
-		if (pthread_create(&tmp->philo, NULL, routine, tmp))
-			return (printf("Philo: Failed to create a new thread.\n"), false);
-		if (pthread_create(&dead_check, NULL, is_died, tmp))
-			return (printf("Philo: Failed to create a new thread.\n"), false);
-		pthread_detach(dead_check);
-		usleep(100);
-		tmp = tmp->next;
-		index++;
-	}
-	index = 0;
-	tmp = (*list);
-	while (index < tmp->philo_count)
-	{
-		pthread_join(tmp->philo, NULL);
-		index++;
-		tmp = tmp->next;
+		if (lst_addback(philo, newphilo(id, monitor)))
+			return (false);
+		id++;
 	}
 	return (true);
 }
