@@ -6,7 +6,7 @@
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 15:32:12 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/06 19:46:22 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/07 16:56:27 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,27 +15,6 @@
 bool	init_monitor(t_monitor **monitor, char *av[]);
 bool	init_philos(t_philo **philos, t_monitor **monitor);
 bool	start_simulation(t_philo *philos);
-void printThemAll(t_philo *philos, int j)
-{
-	while (j--)
-	{
-		printf("---------------------------------\n");
-		printf("id: %d\n", philos->id);
-		printf("print_thread: %p\n", &((t_monitor *)philos->monitor)->print);
-		printf("eating_thread: %p\n", &((t_monitor *)philos->monitor)->eating);
-		printf("dead_thread: %p\n", &((t_monitor *)philos->monitor)->dead);
-		printf("nb_eat: %d\n", ((t_monitor *)philos->monitor)->nb_eat);
-		printf("time_to_die: %d\n", ((t_monitor *)philos->monitor)->time_to_die);
-		printf("time_to_eat: %d\n", ((t_monitor *)philos->monitor)->time_to_eat);
-		printf("time_to_sleep: %d\n", ((t_monitor *)philos->monitor)->time_to_sleep);
-		printf("is_dead: %d\n", ((t_monitor *)philos->monitor)->is_dead);
-		printf("start_time: %ld\n", ((t_monitor *)philos->monitor)->start_time);
-		printf("last_eat: %ld\n", philos->last_eat);
-		printf("is_full: %d\n", philos->is_full);
-		printf("---------------------------------\n");
-		philos = philos->next;
-	}
-}
 
 int	main(int ac, char *av[])
 {

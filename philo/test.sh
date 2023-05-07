@@ -1,9 +1,9 @@
 
-read -p "Please enter the number of philos: " num
-read -p "Please enter time to die: " die
-read -p "Please enter time to eat: " eat
-read -p "Please enter time to sleep: " sleep
-read -p "Please enter most eat: " meat
+read -p "number_of_philosophers: " num
+read -p "time_to_die: " die
+read -p "time_to_eat: " eat
+read -p "time_to_sleep: " sleep
+read -p "number_of_times_each_philosopher_must_eat: " meat
 
 ./philo $num $die $eat $sleep $meat > test
 
@@ -20,8 +20,8 @@ do
 done
 
 if [ $var = "good" ];then
-	echo "good"
+	echo "all philosophers eat $meat times"
 else
-	echo "bad"
+	echo "not all philosophers eat $meat times"
 fi
 

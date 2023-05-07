@@ -6,7 +6,7 @@
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 18:32:31 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/06 21:41:20 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/07 22:56:49 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,23 @@ bool	print_it(t_philo *philo, char *str)
 	return (true);
 }
 
-void	ft_usleep(long time)
+void	ft_usleep(long time, t_philo *philo)
 {
 	long	start;
 
+
 	start = get_time();
 	while (get_time() - start < time)
+	{
 		usleep(100);
+		pthread_mutex_lock(&((t_monitor *)philo->monitor)->dead);
+		if (((t_monitor *)philo->monitor)->is_dead == true)
+		{
+			pthread_mutex_unlock(&((t_monitor *)philo->monitor)->dead);
+			return ;
+		}
+		pthread_mutex_unlock(&((t_monitor *)philo->monitor)->dead);
+	}
 }
 
 bool	check_full(t_philo *philo)
@@ -67,7 +77,7 @@ void	*routine(void *philo)
 		{
 			if (tmp->id == 1 && tmp->next->id == 1)
 			{
-				ft_usleep(((t_monitor *)tmp->monitor)->time_to_die);
+				ft_usleep(((t_monitor *)tmp->monitor)->time_to_die, tmp);
 				print_it(tmp, "died");
 			}
 			pthread_mutex_unlock(&tmp->fork);
@@ -75,11 +85,7 @@ void	*routine(void *philo)
 		}
 		pthread_mutex_lock(&tmp->next->fork);
 		if (print_it(tmp, "has taken a fork") == false)
-		{
-			pthread_mutex_unlock(&tmp->fork);
-			pthread_mutex_unlock(&tmp->next->fork);
-			break ;
-		}
+			return (pthread_mutex_unlock(&tmp->fork), pthread_mutex_unlock(&tmp->next->fork), NULL);
 		if (print_it(tmp, "is eating") == false)
 		{
 			pthread_mutex_unlock(&tmp->fork);
@@ -91,7 +97,7 @@ void	*routine(void *philo)
 		pthread_mutex_unlock(&(tmp->last_eat_mutex));
 		if (((t_monitor *)tmp->monitor)->nb_eat != -1)
 			tmp->eat_count++ ;
-		ft_usleep(((t_monitor *)tmp->monitor)->time_to_eat);
+		ft_usleep(((t_monitor *)tmp->monitor)->time_to_eat, tmp);
 		pthread_mutex_unlock(&tmp->fork);
 		pthread_mutex_unlock(&tmp->next->fork);
 		if (tmp->eat_count == ((t_monitor *)tmp->monitor)->nb_eat)
@@ -102,7 +108,7 @@ void	*routine(void *philo)
 		}
 		if (print_it(tmp, "is sleeping") == false)
 			break ;
-		ft_usleep(((t_monitor *)tmp->monitor)->time_to_sleep);
+		ft_usleep(((t_monitor *)tmp->monitor)->time_to_sleep, tmp);
 		if (print_it(tmp, "is thinking") == false)
 			break ;
 	}
@@ -117,6 +123,11 @@ void	*monitor(void *philo)
 	while (1)
 	{
 		pthread_mutex_lock(&((t_monitor *)tmp->monitor)->dead);
+		if (((t_monitor *)tmp->monitor)->is_dead == true)
+		{
+			pthread_mutex_unlock(&((t_monitor *)tmp->monitor)->dead);
+			break ;
+		}
 		pthread_mutex_lock(&(tmp->last_eat_mutex));
 		if (get_time() - tmp->last_eat
 			> ((t_monitor *)tmp->monitor)->time_to_die
@@ -128,6 +139,7 @@ void	*monitor(void *philo)
 			pthread_mutex_lock(&((t_monitor *)tmp->monitor)->dead);
 			((t_monitor *)tmp->monitor)->is_dead = true;
 			pthread_mutex_unlock(&((t_monitor *)tmp->monitor)->dead);
+			pthread_mutex_unlock(&(tmp->last_eat_mutex));
 			break ;
 		}
 		pthread_mutex_unlock(&((t_monitor *)tmp->monitor)->dead);
