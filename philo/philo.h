@@ -6,14 +6,12 @@
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 15:25:09 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/06 18:51:52 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/09 21:31:43 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
-
-
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -39,19 +37,22 @@ typedef struct s_philo{
 	int				id;
 	long			last_eat;
 	int				eat_count;
-	pthread_mutex_t	last_eat_mutex;
 	bool			is_full;
 	t_monitor		*monitor;
 	pthread_t		thread;
+	pthread_mutex_t	last_eat_mutex;
 	pthread_mutex_t	fork;
 	struct s_philo	*next;
 }t_philo;
 
-int			parsing(int ac, char *av[]);
-int			ft_atoi(char *str);
-long		get_time(void);
+bool		parsing(int ac, char *av[]);
+long long	ft_atoi(char *str);
+long long	get_time(void);
 t_philo		*newphilo(int id, t_monitor **monitor);
-int			lst_addback(t_philo **philo, t_philo *new);
+bool		lst_addback(t_philo **philo, t_philo *new);
 bool		start_simulation(t_philo *philos);
+bool		print_it(t_philo *philo, char *str);
+void		ft_usleep(long time, t_philo *philo);
+void		clearresource(t_philo *philos);
 
 #endif

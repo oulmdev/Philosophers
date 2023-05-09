@@ -6,7 +6,7 @@
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 15:33:25 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/06 15:33:56 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/09 23:37:00 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 int	ft_isdigit(int c)
 {
-	return (c >= '0' && c <= '9');
+	return ((c >= '0' && c <= '9') || c == '+' || c == ' ');
 }
 
-int	parsing(int ac, char *av[])
+bool	parsing(int ac, char *av[])
 {
 	int	i;
 	int	j;
@@ -26,9 +26,11 @@ int	parsing(int ac, char *av[])
 	while (++i < ac)
 	{
 		j = -1;
+		if (av[i] == NULL || av[i][0] == '\0')
+			return (false);
 		while (av[i][++j])
 			if (!ft_isdigit(av[i][j]))
-				return (1);
+				return (false);
 	}
-	return (0);
+	return (true);
 }

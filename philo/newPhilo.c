@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   newphilo.c                                         :+:      :+:    :+:   */
+/*   newPhilo.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 15:42:49 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/06 19:51:33 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/09 16:23:09 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long	get_time(void)
+long long	get_time(void)
 {
 	struct timeval	time;
 
@@ -20,15 +20,22 @@ long	get_time(void)
 	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 }
 
-int	ft_atoi(char *str)
+long long	ft_atoi(char *str)
 {
 	int	i;
 	int	nbr;
 
-	i = -1;
+	i = 0;
 	nbr = 0;
-	while (str[++i])
+	while (str[i] && str[i] == ' ')
+		i++;
+	while (str[i] && str[i] == '+')
+		i++;
+	while (str[i] && (str[i] >= '0' && str[i] <= '9'))
+	{
 		nbr = (nbr * 10) + (str[i] - '0');
+		i++;
+	}
 	return (nbr);
 }
 

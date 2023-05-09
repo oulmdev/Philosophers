@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: moulmoud <moulmoud@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 15:32:12 by moulmoud          #+#    #+#             */
-/*   Updated: 2023/05/07 16:56:27 by moulmoud         ###   ########.fr       */
+/*   Updated: 2023/05/09 18:37:26 by moulmoud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	main(int ac, char *av[])
 	philos = NULL;
 	if (ac < 5 || ac > 6)
 		return (printf("Error: Wrong number of arguments\n"));
-	if (parsing(ac, av))
+	if (parsing(ac, av) == false)
 		return (printf("Error: Wrong arguments\n"));
 	if (init_monitor(&monitor, av) == false)
 		return (printf("Error: Monitor initialization failed\n"));
@@ -32,6 +32,7 @@ int	main(int ac, char *av[])
 		return (printf("Error: Philos initialization failed\n"));
 	if (!start_simulation(philos))
 		return (printf("Error: Simulation failed\n"));
+	clearresource(philos);
 	return (0);
 }
 
